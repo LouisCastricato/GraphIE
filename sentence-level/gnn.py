@@ -155,9 +155,6 @@ class AttnSent(nn.Module):
             attn.data.masked_fill_(~attn_mask, -float('inf'))
 
             attn = self.softmax(attn)
-            print(attn_mask)
-            print(attn)
-            sys.exit()
                 
         attn_applied = torch.bmm(torch.transpose(embedded, 1, 2), attn.unsqueeze(2)).squeeze(2)
         return attn_applied, attn
