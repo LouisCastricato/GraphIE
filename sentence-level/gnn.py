@@ -155,6 +155,7 @@ class AttnSent(nn.Module):
             attn.data.masked_fill_(attn_mask, -float('inf'))
 
             attn = self.softmax(attn)
+            print(attn_mask)
             print(attn)
             sys.exit()
                 
