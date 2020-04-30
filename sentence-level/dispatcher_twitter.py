@@ -137,6 +137,7 @@ if __name__ == "__main__":
         try:
             result_dict = json.load(open(result_path))
         except Exception as e:
+            print(e)
             print("Experiment at {} failed".format(colored(result_path, 'red')))
             continue
         ## Only export keys we want to see in sheet to csv
