@@ -112,7 +112,7 @@ class GNN_Twitter(nn.Module):
 
         # here, batch_size = num_user, docu_len = num_sent
         batch_size, docu_len, sent_len, word_len = data_char.size()
-        if not batch_size == 0:
+        if not batch_size == 1:
             print(batch_size)
         
         # word representation
@@ -145,12 +145,7 @@ class GNN_Twitter(nn.Module):
             else:
                 h_gcn, _ = self.tweet_attn(h_sent, sent_mask)
                 h_gcn = h_gcn.unsqueeze(0)
-
-            if not docu_len == 1:
-                print(h_sent.size())
-                print(h_gcn.size())
-                print(h_gcn)
-                sys.exit()
+                
             adj = adj.unsqueeze(0)
             for i in range(len(self.gnn_layer)):
                 h_gcn = self.gnn_layer[i](h_gcn, adj)
