@@ -8,7 +8,7 @@ import json
 import time
 from ModelUtils import RNN, CRF
 from attention import MultiHeadAttention, PositionAwareAttention
-
+import sys
 class Character_CNN(nn.Module):
 
     def __init__(self, vocab_size, embed_dim, num_filters, filter_sizes):
