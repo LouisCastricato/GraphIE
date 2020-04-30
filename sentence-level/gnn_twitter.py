@@ -127,7 +127,7 @@ class GNN_Twitter(nn.Module):
         # encoder
         start = time.time()
         h_word = self.drop(h_word)
-        h_word, h_sent = self.encoder_lstm(h_word, length, mask, None)
+        h_word, h_sent = self.encoder_lstm(h_word, length, mask.type(torch.bool), None)
         self.lstm_time += time.time()-start
         
         # graph neural network
