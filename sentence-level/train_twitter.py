@@ -31,13 +31,15 @@ parser.add_argument('--d_pos_embed', type=int, default=32, help='additional feat
 parser.add_argument('--d_graph', type=str, default='128', help='lstm and graph layer dimension')
 parser.add_argument('--weight_balance', type=float, default=1., help='weight balance')
 parser.add_argument('--dropout', type=float, default=0.1, help='dropout probability')
-parser.add_argument('--model', type=str, default='lstm-gcn-lstm', choices=['lstm', 'lstm-lstm', 'lstm-gcn-lstm', 'lstm-gat-lstm'], help='model')
+parser.add_argument('--model', type=str, default='lstm-gcn-lstm', choices=['lstm', 'lstm-lstm',
+     'lstm-gcn-lstm', 'lstm-gat-lstm', 'lstm-ggnn-lstm'], help='model')
 parser.add_argument('--crf', action='store_true', default=False, help='final crf')
 parser.add_argument('--save_path', type=str, default='models/output', help='output name')
 parser.add_argument('--data_path', type=str, default='twitter_data/tmp/', help='data path')
 parser.add_argument('--task', type=str, default='education', choices=['education','job'])
 parser.add_argument('--entity_classification', action='store_true', default=False, help='entity classification')
 parser.add_argument('--test', action='store_true', default=False, help='test mode')
+parser.add_argument('--sent_attn', action='store_true', default=False, help='Enables sentence level attention')
 
 args = parser.parse_args()
 

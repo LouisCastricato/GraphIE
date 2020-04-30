@@ -9,7 +9,7 @@ import time
 from ModelUtils import RNN, CRF
 from attention import MultiHeadAttention
 from gnn import *
-
+from GGNN import *
 
 def masked_mean(x, mask):
     # x: (batch, num_sent, -1)
@@ -66,8 +66,13 @@ class GNN_Twitter(nn.Module):
                 self.gnn_layer.append(GNN_Layer(d_in, d_out, globalnode=False))
             if 'gat' in self.model:
                 self.gnn_layer.append(GNN_Att_Layer(n_head=4, d_input=d_in, d_model=d_out, globalnode=False))
+            if 'ggnn' in self.model:
+                self.gnn_layer.append(GGNN(state_dim=d_in, annotation_dim=1, n_edge_types=1, n_steps=8))
             d_in = d_out
-        
+
+        self.sent_attn = AttnSent(d_in)
+        self.use_attn = args.sent_attn
+
         self.entity_classification = args.entity_classification
         
         if 'concat' not in self.model:
@@ -129,7 +134,9 @@ class GNN_Twitter(nn.Module):
         h_gcn = None
         if len(self.gnn_layer) > 0:
             h_sent = h_sent.view(batch_size, docu_len, -1)
+            print(h_sent.size())
             h_gcn = masked_mean(h_sent, sent_mask).unsqueeze(0)
+            print(h_gcn.size())
             adj = adj.unsqueeze(0)
             for i in range(len(self.gnn_layer)):
                 h_gcn = self.gnn_layer[i](h_gcn, adj)
@@ -141,7 +148,7 @@ class GNN_Twitter(nn.Module):
         start = time.time()
         if self.decoder_lstm is not None:
             h_word, h_sent = self.decoder_lstm(h_word, length, mask, h_gcn)
-        if self.model in ['lstm-gcn-concat', 'lstm-gat-concat']:
+        if self.model in ['lstm-gcn-concat', 'lstm-gat-concat', 'lstm-ggnn-concat']:
             h_gcn = h_gcn.unsqueeze(1).expand(-1, sent_len, -1)
             h_word = torch.cat([h_word, h_gcn], dim=2)
         self.lstm_time += time.time()-start
@@ -154,7 +161,10 @@ class GNN_Twitter(nn.Module):
         # ## entity_mask: num_sent, sent_len
             num_sent, sent_len = entity_mask.size()
             h = h[:num_sent, :sent_len]
-            h = masked_mean(h, entity_mask)
+            if not self.use_attn:
+                h = masked_mean(h, entity_mask)
+            #else:
+            #    h = self.sent_attn(
 
         # if self.output_type == 'entity':
         #     ## h: num_sent, d_input

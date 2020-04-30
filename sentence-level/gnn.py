@@ -118,7 +118,47 @@ class GlobalNode(nn.Module):
         
         return self.linear_go(h_g)
 
+class AttnSent(nn.Module):
+    def __init__(self, hidden_size, dropout_p=0.1, max_length_input=1, max_length_output=1):
+        super(AttnSent, self).__init__()
+        self.hidden_size = hidden_size
+        self.dropout_p = dropout_p
+        self.max_length = max_length_input
+        self.max_length_out = max_length_output
 
+        self.gcn_reduce = nn.Linear(self.max_length * hidden_size, self.max_length * hidden_size)
+        self.attn = nn.Linear(self.max_length * hidden_size, self.max_length_out)
+        
+        #PG.init_linear_wt(self.attn)
+        #PG.init_linear_wt(self.attn_combine)
+        
+        self.softmax = nn.Softmax(dim=0)
+        self.dropout = nn.Dropout(self.dropout_p)
+        self.time = int(round(time.time() * 1000))
+    
+    def forward(self, embedded, device, lengths=None, support=False):
+        embedded_d = embedded
+        embedded_d = self.dropout(embedded)
+        
+        batch_size, sent_count, embd = embedded_d.size()
+        embedded_d = embedded_d.view(-1, embd)
+
+        attn_applied = None
+        attn_weights = torch.zeros(batch_size, sent_count).to(device)
+        attn = self.attn(torch.tanh(self.gcn_reduce(embedded_d)))
+        attn = attn.view(batch_size, -1)
+
+        for i in range(batch_size):
+            attn_weights[i][0:lengths[i]] = self.softmax(attn[i][0:lengths[i]])
+                
+        attn_applied = torch.bmm(torch.transpose(embedded, 1, 2), attn_weights.unsqueeze(2)).squeeze(2)
+        return attn_applied, attn_weights
+        
+
+    def clear_time(self):
+        self.time = int(round(time.time() * 1000)) 
+    def initHidden(self, device, sentences, batches = 1):
+        return torch.zeros(batches, sentences, self.hidden_size, device=device)
 class GNN_Layer(nn.Module):
 
     def __init__(self, d_input, d_model, globalnode, n_graph=1):
