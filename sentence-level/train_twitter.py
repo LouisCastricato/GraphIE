@@ -40,7 +40,7 @@ parser.add_argument('--task', type=str, default='education', choices=['education
 parser.add_argument('--entity_classification', action='store_true', default=False, help='entity classification')
 parser.add_argument('--test', action='store_true', default=False, help='test mode')
 parser.add_argument('--post_attn', action='store_true', default=False, help='Enables sentence level attention')
-parser.add_argument('--pre_attn', action='store_true', default=True, help='Enables tweet level attention')
+parser.add_argument('--pre_attn', action='store_true', default=False, help='Enables tweet level attention')
 
 args = parser.parse_args()
 
