@@ -164,9 +164,9 @@ class GNN_Twitter(nn.Module):
             h = h[:num_sent, :sent_len]
             print(h.size())
             if not self.use_attn:
-                h = masked_mean(h, entity_mask)
+                h = masked_mean(h, entity_mask.type(torch.bool))
             else:
-                h, _ = self.sent_attn(h, entity_mask)
+                h, _ = self.sent_attn(h, entity_mask.type(torch.bool))
             print(h.size())
             sys.exit()
         # if self.output_type == 'entity':
