@@ -152,7 +152,7 @@ class AttnSent(nn.Module):
                     'Attention mask shape {} mismatch with Attention logit tensor shape ' \
                     '{}.'.format(attn_mask.size(), attn.size())
             attn_mask = attn_mask.view(batch_size, -1)
-            attn.data.masked_fill_(attn_mask, -float('inf'))
+            attn.data.masked_fill_(~attn_mask, -float('inf'))
 
             attn = self.softmax(attn)
             print(attn_mask)
