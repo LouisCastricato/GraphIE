@@ -115,6 +115,7 @@ class GGNN(nn.Module):
         n_embd = prop_state
         batch, n_nodes, d_input = prop_state.size()
         for i_step in range(self.n_steps):
+            print(i_step)
             #print ("PROP STATE SIZE:", prop_state.size()) #batch size x |V| x state dim
             in_states = []
             out_states = []
