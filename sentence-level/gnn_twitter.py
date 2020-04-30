@@ -144,7 +144,7 @@ class GNN_Twitter(nn.Module):
                 h_gcn, _ = self.tweet_attn(h_sent, sent_mask)
                 h_gcn = h_gcn.unsqueeze(0)
 
-            if not docu_len == 0:
+            if not docu_len == 1:
                 print(h_sent.size())
                 print(h_gcn.size())
                 print(h_gcn)
