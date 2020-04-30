@@ -117,7 +117,7 @@ def evaluate(model, dataset, output=False, args=args):
     model.eval()
     total_loss = 0
     eval_log = open(args.save_path+'_eval.log', 'w')
-    for ego in tqdm(dataset, file=eval_log,  mininterval=10): 
+    for ego in tqdm(dataset, file=eval_log,  mininterval=1): 
         
         logit, loss, pred = run_model(model, ego, loss_function, predict=True, args=args)
         total_loss += loss.data.sum()
