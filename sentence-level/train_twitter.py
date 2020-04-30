@@ -231,7 +231,7 @@ def train(dataset):
         for epoch in range(args.epochs):
             
             train_log = open(args.save_path+'_train.log','w')
-            for ego in tqdm(dataset.train, file=train_log):
+            for ego in tqdm(dataset.train):
                 iters += 1
                 logit, loss, pred = run_model(model, ego, loss_function, args=args)
                 total_loss += loss.data.sum()
