@@ -145,6 +145,7 @@ class GNN_Twitter(nn.Module):
                 h_gcn = h_gcn.unsqueeze(0)
             print(h_sent.size())
             print(h_gcn.size())
+            print(h_gcn)
             sys.exit()
             adj = adj.unsqueeze(0)
             for i in range(len(self.gnn_layer)):
