@@ -50,6 +50,7 @@ class GNN_Twitter(nn.Module):
         d_in = args.n_filter * len(args.filter_sizes) + args.d_word_embed
         
         self.encoder_lstm = Word_LSTM(d_in, args.d_graph[0])
+        self.tweet_attn = AttnSent(args.d_graph[0])
 
         if self.model in ['lstm-lstm', 'lstm-gcn-lstm', 'lstm-gat-lstm']:
             self.decoder_lstm = Word_LSTM(args.d_graph[0], args.d_graph[-1])
@@ -72,7 +73,9 @@ class GNN_Twitter(nn.Module):
             d_in = d_out
 
         self.sent_attn = AttnSent(d_in)
-        self.use_attn = args.sent_attn
+
+        self.pre_attn = args.pre_attn
+        self.post_attn = args.post_attn
 
         self.entity_classification = args.entity_classification
         
@@ -135,7 +138,11 @@ class GNN_Twitter(nn.Module):
         h_gcn = None
         if len(self.gnn_layer) > 0:
             h_sent = h_sent.view(batch_size, docu_len, -1)
-            h_gcn = masked_mean(h_sent, sent_mask).unsqueeze(0)
+            if not self.pre_attn:
+                h_gcn = masked_mean(h_sent, sent_mask).unsqueeze(0)
+            else:
+                h_gcn, _ = self.tweet_attn(h_sent, sent_mask)
+                h_gcn = h_gcn.unsqueeze(0)
 
             adj = adj.unsqueeze(0)
             for i in range(len(self.gnn_layer)):

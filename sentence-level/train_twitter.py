@@ -39,7 +39,8 @@ parser.add_argument('--data_path', type=str, default='twitter_data/tmp/', help='
 parser.add_argument('--task', type=str, default='education', choices=['education','job'])
 parser.add_argument('--entity_classification', action='store_true', default=False, help='entity classification')
 parser.add_argument('--test', action='store_true', default=False, help='test mode')
-parser.add_argument('--sent_attn', action='store_true', default=False, help='Enables sentence level attention')
+parser.add_argument('--post_attn', action='store_true', default=False, help='Enables sentence level attention')
+parser.add_argument('--pre_attn', action='store_true', default=True, help='Enables tweet level attention')
 
 args = parser.parse_args()
 
@@ -154,8 +155,8 @@ def evaluate(model, dataset, output=False, args=args):
 
         if not args.entity_classification:
             mask = ego.mask[0]
-            pred = pred.masked_select(mask.view(-1))
-            gold = gold.masked_select(mask.view(-1))
+            pred = pred.masked_select(mask.view(-1).type(torch.bool))
+            gold = gold.masked_select(mask.view(-1).type(torch.bool))
 
         for tag in [TAG_B, TAG_I]:
             pred_cnt = int(pred.eq(tag).sum())
