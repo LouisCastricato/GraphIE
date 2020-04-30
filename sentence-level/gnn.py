@@ -132,11 +132,11 @@ class AttnSent(nn.Module):
         #PG.init_linear_wt(self.attn)
         #PG.init_linear_wt(self.attn_combine)
         
-        self.softmax = nn.Softmax(dim=0)
+        self.softmax = nn.Softmax(dim=-1)
         self.dropout = nn.Dropout(self.dropout_p)
         self.time = int(round(time.time() * 1000))
     
-    def forward(self, embedded, device, lengths=None, support=False):
+    def forward(self, embedded, attn_mask=None):
         embedded_d = embedded
         embedded_d = self.dropout(embedded)
         
@@ -144,15 +144,20 @@ class AttnSent(nn.Module):
         embedded_d = embedded_d.view(-1, embd)
 
         attn_applied = None
-        attn_weights = torch.zeros(batch_size, sent_count).to(device)
         attn = self.attn(torch.tanh(self.gcn_reduce(embedded_d)))
         attn = attn.view(batch_size, -1)
 
-        for i in range(batch_size):
-            attn_weights[i][0:lengths[i]] = self.softmax(attn[i][0:lengths[i]])
+        if attn_mask is not None:
+            assert attn_mask.size() == attn.size(), \
+                    'Attention mask shape {} mismatch with Attention logit tensor shape ' \
+                    '{}.'.format(attn_mask.size(), attn.size())
+            attn_mask = attn_mask.view(batch_size, -1)
+            attn.data.masked_fill_(attn_mask, -float('inf'))
+
+            attn = self.softmax(attn)
                 
-        attn_applied = torch.bmm(torch.transpose(embedded, 1, 2), attn_weights.unsqueeze(2)).squeeze(2)
-        return attn_applied, attn_weights
+        attn_applied = torch.bmm(torch.transpose(embedded, 1, 2), attn.unsqueeze(2)).squeeze(2)
+        return attn_applied, attn
         
 
     def clear_time(self):
