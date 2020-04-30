@@ -138,11 +138,14 @@ class GNN_Twitter(nn.Module):
             print(h_sent.size())
             h_gcn = masked_mean(h_sent, sent_mask).unsqueeze(0)
             print(h_gcn.size())
-            sys.exit()
+
             adj = adj.unsqueeze(0)
             for i in range(len(self.gnn_layer)):
                 h_gcn = self.gnn_layer[i](h_gcn, adj)
+            print(h_gcn.size())
             h_gcn = h_gcn.view(batch_size, -1).unsqueeze(1).expand(-1, docu_len, -1)
+            print(h_gcn.size())
+            sys.exit()
             h_gcn = h_gcn.contiguous().view(batch_size * docu_len, -1)
         self.gcn_time += time.time()-start
 

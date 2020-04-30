@@ -28,7 +28,7 @@ parser.add_argument('--d_word_embed', type=int, default=50, help='character embe
 parser.add_argument('--filter_sizes', type=str, default='2,3,4', help='character cnn filter size')
 parser.add_argument('--n_filter', type=int, default=64, help='character cnn filter number')
 parser.add_argument('--d_pos_embed', type=int, default=32, help='additional feature')
-parser.add_argument('--d_graph', type=str, default='128', help='lstm and graph layer dimension')
+parser.add_argument('--d_graph', type=str, default='64', help='lstm and graph layer dimension')
 parser.add_argument('--weight_balance', type=float, default=1., help='weight balance')
 parser.add_argument('--dropout', type=float, default=0.1, help='dropout probability')
 parser.add_argument('--model', type=str, default='lstm-gcn-lstm', choices=['lstm', 'lstm-lstm',
