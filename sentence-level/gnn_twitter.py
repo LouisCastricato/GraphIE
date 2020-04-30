@@ -127,7 +127,7 @@ class GNN_Twitter(nn.Module):
         # encoder
         start = time.time()
         h_word = self.drop(h_word)
-        h_word, h_sent = self.encoder_lstm(h_word, length, mask.type(torch.bool), None)
+        h_word, h_sent = self.encoder_lstm(h_word, length, mask, None)
         self.lstm_time += time.time()-start
         
         # graph neural network
@@ -148,7 +148,7 @@ class GNN_Twitter(nn.Module):
         # decoder
         start = time.time()
         if self.decoder_lstm is not None:
-            h_word, h_sent = self.decoder_lstm(h_word, length, mask.type(torch.bool), h_gcn)
+            h_word, h_sent = self.decoder_lstm(h_word, length, mask, h_gcn)
         if self.model in ['lstm-gcn-concat', 'lstm-gat-concat', 'lstm-ggnn-concat']:
             h_gcn = h_gcn.unsqueeze(1).expand(-1, sent_len, -1)
             h_word = torch.cat([h_word, h_gcn], dim=2)
@@ -158,18 +158,17 @@ class GNN_Twitter(nn.Module):
         h = h_word[0]
 
         if self.entity_classification:
-            print("test")
+
         # ## h: num_sent, sent_len, d_input
         # ## entity_mask: num_sent, sent_len
             num_sent, sent_len = entity_mask.size()
             h = h[:num_sent, :sent_len]
-            print(h.size())
+
             if not self.use_attn:
                 h = masked_mean(h, entity_mask.type(torch.bool))
             else:
                 h, _ = self.sent_attn(h, entity_mask.type(torch.bool))
-            print(h.size())
-            sys.exit()
+
         # if self.output_type == 'entity':
         #     ## h: num_sent, d_input
         #     ## entity_sent_mask: num_entity, num_sent
