@@ -235,7 +235,7 @@ def train(dataset):
                 iters += 1
                 logit, loss, pred = run_model(model, ego, loss_function, args=args)
                 total_loss += loss.data.sum()
-                
+                print("Meow")
                 if math.isnan(total_loss):
                     print('Loss is NaN!')
                     exit()
