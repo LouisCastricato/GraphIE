@@ -10,6 +10,7 @@ from ModelUtils import RNN, CRF
 from attention import MultiHeadAttention
 from gnn import *
 from GGNN import *
+import sys
 
 def masked_mean(x, mask):
     # x: (batch, num_sent, -1)
@@ -137,6 +138,7 @@ class GNN_Twitter(nn.Module):
             print(h_sent.size())
             h_gcn = masked_mean(h_sent, sent_mask).unsqueeze(0)
             print(h_gcn.size())
+            sys.exit()
             adj = adj.unsqueeze(0)
             for i in range(len(self.gnn_layer)):
                 h_gcn = self.gnn_layer[i](h_gcn, adj)
