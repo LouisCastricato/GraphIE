@@ -112,6 +112,8 @@ class GNN_Twitter(nn.Module):
 
         # here, batch_size = num_user, docu_len = num_sent
         batch_size, docu_len, sent_len, word_len = data_char.size()
+        if not batch_size == 0:
+            print(batch_size)
         
         # word representation
         start = time.time()
