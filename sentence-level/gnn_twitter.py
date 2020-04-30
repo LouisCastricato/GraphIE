@@ -148,7 +148,7 @@ class GNN_Twitter(nn.Module):
         # decoder
         start = time.time()
         if self.decoder_lstm is not None:
-            h_word, h_sent = self.decoder_lstm(h_word, length, mask, h_gcn)
+            h_word, h_sent = self.decoder_lstm(h_word, length, mask.type(torch.bool), h_gcn)
         if self.model in ['lstm-gcn-concat', 'lstm-gat-concat', 'lstm-ggnn-concat']:
             h_gcn = h_gcn.unsqueeze(1).expand(-1, sent_len, -1)
             h_word = torch.cat([h_word, h_gcn], dim=2)
