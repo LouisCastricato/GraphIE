@@ -153,7 +153,7 @@ class GNN_Twitter(nn.Module):
             h_gcn = h_gcn.unsqueeze(1).expand(-1, sent_len, -1)
             h_word = torch.cat([h_word, h_gcn], dim=2)
         self.lstm_time += time.time()-start
-
+        sys.exit()
         h_word = h_word.view(batch_size, docu_len, sent_len, -1)
         h = h_word[0]
 
