@@ -78,13 +78,13 @@ def run_model(model, ego, loss_function, predict=False, args=args):
 
     if args.crf:
         loss = -model.crf_layer.loglikelihood(logit, mask[0], length[0], label)
-        loss = torch.masked_select(loss, torch.gt(length[0], 0)).mean()
+        loss = torch.masked_select(loss, torch.gt(length[0], 0).type(torch.bool)).mean()
     else:
         loss = loss_function(logit.view(-1, d_output), label.view(-1))
         if args.entity_classification:
             loss = loss.mean()
         else:
-            loss = torch.masked_select(loss, mask[0].view(-1)).mean()
+            loss = torch.masked_select(loss, mask[0].view(-1).type(torch.bool)).mean()
 
     if predict:
         if args.crf:
